@@ -42,7 +42,8 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         """Метод для валидации. Вызывается при создании и обновлении."""
 
         # TODO: добавьте требуемую валидацию
-        if self.context["request"].method == 'POST':
+        method = self.context["request"].method
+        if method in ['POST', 'PATCH'] and data.get('status', {'POST': 'OPEN', 'PATCH': ''}[method]) == 'OPEN':
             if Advertisement.objects.filter(creator=self.context["request"].user, status='OPEN').count() >= MAX_ADS_COUNT:
                 raise ValidationError('Too many ads')
 
